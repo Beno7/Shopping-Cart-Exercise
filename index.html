@@ -1,0 +1,109 @@
+<html>
+</html>
+<script type="text/javascript" src="./src/index.js" async=false></script>
+<script type="text/javascript" async=false>
+  window.addEventListener('load', function() {
+    const promo1 = { // N for N deal
+      _id: 'unique_id_1',
+      pricingRuleCode: PricingRuleCodes.N_FOR_N_DEAL,
+      pricingMetadata: {
+        requirements: [
+          {
+            productCode: 'ult_small',
+            minQuantity: 3
+          }
+        ],
+        incentives: [
+          {
+            productCode: 'ult_small',
+            quantity: 1
+          }
+        ]
+      }
+    };
+    const promo2 = { // bulk discount
+      _id: 'unique_id_2',
+      pricingRuleCode: PricingRuleCodes.BULK_DISCOUNT,
+      pricingMetadata: {
+        requirements: [
+          {
+            productCode: 'ult_large',
+            minQuantity: 4,
+          }
+        ],
+        incentives: [
+          {
+            productCode: 'ult_large',
+            newPrice: 39.9
+          }
+        ]
+      }
+    };
+    const promo3 = { // freebie
+      _id: 'unique_id_3',
+      pricingRuleCode: PricingRuleCodes.FREEBIE,
+      pricingMetadata: {
+        requirements: [
+          {
+            productCode: 'ult_medium',
+            minQuantity: 1
+          }
+        ],
+        incentives: [
+          {
+            productCode: '1gb',
+            quantity: 1
+          }
+        ]
+      }
+    };
+    const promo4 = { // Promo Code
+      _id: 'unique_id_4',
+      pricingRuleCode: PricingRuleCodes.PROMO_CODE,
+      pricingMetadata: {
+        code: 'I<3AMAYSIM',
+        discounts: [{
+          percentage: 0.1,
+          productCodes: ['ult_small', 'ult_medium', 'ult_large', '1gb']
+        }]
+      }
+    };
+    var pricingRules = [promo1, promo2, promo3, promo4];
+    const cart = ShoppingCart.new(pricingRules);
+    // Scenario 1
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_large'));
+    console.log('--- SCENARIO 1 CHECKOUT:');// , cart.checkout());
+    console.log('Cart Total:', '$'+cart.total.toFixed(2));
+    console.log('Breakdown:\n' + cart.formatCartBreakdown());
+    cart.checkout(); // reset cart
+    // Scenario 2
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_large'));
+    cart.add(ProductService.getProduct('ult_large'));
+    cart.add(ProductService.getProduct('ult_large'));
+    cart.add(ProductService.getProduct('ult_large'));
+    console.log('--- SCENARIO 2 CHECKOUT:');// , cart.checkout());
+    console.log('Cart Total:', '$'+cart.total.toFixed(2));
+    console.log('Cart Items:\n' + cart.formatCartBreakdown());
+    cart.checkout(); // reset cart
+    // Scenario 3
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('ult_medium'));
+    cart.add(ProductService.getProduct('ult_medium'));
+    console.log('--- SCENARIO 3 CHECKOUT:');// , cart.checkout());
+    console.log('Cart Total:', '$'+cart.total.toFixed(2));
+    console.log('Cart Items:\n' + cart.formatCartBreakdown());
+    cart.checkout(); // reset cart
+    // Scenario 4
+    cart.add(ProductService.getProduct('ult_small'));
+    cart.add(ProductService.getProduct('1gb'), 'I<3AMAYSIM');
+    console.log('--- SCENARIO 4 CHECKOUT:');// , cart.checkout());
+    console.log('Cart Total:', '$'+cart.total.toFixed(2));
+    console.log('Cart Items:\n' + cart.formatCartBreakdown());
+    cart.checkout(); // reset cart
+  }, false);
+</script>
