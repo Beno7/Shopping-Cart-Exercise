@@ -9,3 +9,5 @@
 ## Running the system
 
 ## Adding system tests
+
+## System Architecture
