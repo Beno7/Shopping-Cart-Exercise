@@ -8,7 +8,9 @@ const ShoppingCart = new (function() {
   function _createShoppingCart(shoppingRules) {
     // This Shopping Cart's Shopping Rules
     var _shoppingRules = [];
-    var _promoCodesApplied = [];
+    // deprecated
+    // var _promoCodesApplied = [];
+    var _promoCodeApplied = null;
     // cart container <{productCode<string>: quantity<number>}>
     var _cart = {};
 
@@ -35,7 +37,9 @@ const ShoppingCart = new (function() {
           // check if promocode has not been applied yet
           if (!_isPromoCodeApplied(promoCode.getPricingMetadata().code)) {
             // apply promocode
-            _promoCodesApplied.push(promoCode);
+            // deprecated
+            // _promoCodesApplied.push(promoCode);
+            _promoCodeApplied = promoCode;
           }
         }
       }
@@ -56,10 +60,12 @@ const ShoppingCart = new (function() {
      * @returns bool
      */
     function _isPromoCodeApplied(promoCode) {
-      return _promoCodesApplied
+      // deprecated
+      /*return _promoCodesApplied
         .filter(promo => {
           return promo.getPricingMetadata().code === promoCode;
-        }).length > 0;
+        }).length > 0;*/
+      return _promoCodeApplied ? (_promoCodeApplied.getPricingMetadata().code === promoCode) : false;
     }
 
     /**
@@ -353,11 +359,12 @@ const ShoppingCart = new (function() {
           total -= priceToDeduce;
         });
 
+      // deprecated
       // Extract promo code to be utilised.
       // Assume that promocodes are not stackable.
       // Assume that promocodes only provide a percentage discount (Not a constant value)
       // in the event of multiple promo codes applied, check which promo code offers the most discount and use that.
-      _promoCodesApplied.forEach(promoCode => { // iterate through applied promo codes
+      /*_promoCodesApplied.forEach(promoCode => { // iterate through applied promo codes
         var calculatedDiscount = 0;
         var potentialDiscounts = promoCode.getPricingMetadata().discounts;
         potentialDiscounts.forEach(potentialDiscount => {
@@ -377,7 +384,23 @@ const ShoppingCart = new (function() {
         } else if(calculatedDiscount > chosenPromoCodeDiscount) { // only set discount if calculatedDiscount is greater than the already chosen discount.
           chosenPromoCodeDiscount = calculatedDiscount;
         }
-      });
+      });*/
+      // Promo Code Replacement
+      if (_promoCodeApplied) {
+        var calculatedDiscount = 0;
+        _promoCodeApplied.getPricingMetadata().discounts.forEach(potentialDiscount => {
+          potentialDiscount.productCodes.forEach(productCode => {
+            if (productsToBuy[productCode] || 0) {
+              // add promocode product discount to calculatedDiscount
+              calculatedDiscount +=
+                (potentialDiscount.percentage
+                * ProductService.getProduct(productCode).getProductPrice()
+                * productsToBuy[productCode]);
+            }
+          });
+        });
+        chosenPromoCodeDiscount = calculatedDiscount;
+      }
       // in the event of multiple discounts available, consider one with the most value.
       if (chosenPromoCodeDiscount !== null && total > 0) {
         // total -= (total * chosenPromoCodeDiscount); incorrect calculation
@@ -400,11 +423,13 @@ const ShoppingCart = new (function() {
     /**
      * Returns Calculated Price and Checkout Products
      * Resets cart and promoCodesApplied
-     * @returns {total: number, checkoutProducts[{productCode: string, quantity: number}]}
+     * @returns {total: number, checkoutProducts: [{productCode: string, quantity: number}]}
      */
     function _checkout() {
       const temp = _getCalculatedPriceAndCheckoutProducts();
-      _promoCodesApplied = [];
+      // deprecated
+      // _promoCodesApplied = [];
+      _promoCodeApplied = null;
       _cart = {};
       return temp;
     }
