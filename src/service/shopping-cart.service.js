@@ -82,7 +82,7 @@ const ShoppingCart = new (function() {
     function _getShoppingRuleWithPromoCode(promoCode) {
       const filteredArray = _shoppingRules
         .filter((shoppingRule) => {
-          return shoppingRule.getPricingRuleCode() === PricingRuleCodes.PROMO_CODE;
+          return shoppingRule.getPricingRuleCode() === PRICING_RULE_CODES.PROMO_CODE;
         })
         .filter((shoppingRule) => {
           return (shoppingRule.getPricingMetadata() || {}).code === promoCode;
@@ -134,7 +134,7 @@ const ShoppingCart = new (function() {
       if (AmaysimPricingRule.isJsonValid(shoppingRule || {})){
         if (!_getShoppingRuleWithId(shoppingRule._id.trim())) { // if id does not exist yet
           shoppingRule = new AmaysimPricingRule(shoppingRule);
-          if (shoppingRule.getPricingRuleCode() === PricingRuleCodes.PROMO_CODE) { // check if pricingRuleCode is freebie.
+          if (shoppingRule.getPricingRuleCode() === PRICING_RULE_CODES.PROMO_CODE) { // check if pricingRuleCode is freebie.
             if (_getShoppingRuleWithPromoCode((shoppingRule.getPricingMetadata() || {}).code || '')) { // return null if promo code already exists
               return null;
             }
@@ -173,7 +173,7 @@ const ShoppingCart = new (function() {
      */
     function _getPricingRuleIncentiveWeight(pricingRule, productsToBuy) {
       var weight = 0;
-      if (pricingRule.getPricingRuleCode() === PricingRuleCodes.BULK_DISCOUNT) {
+      if (pricingRule.getPricingRuleCode() === PRICING_RULE_CODES.BULK_DISCOUNT) {
         // iterate through each incentive and store newPrice to a temporary variable.
         const newPrices = {};
         pricingRule.getPricingMetadata().incentives.forEach(incentive => {
@@ -247,7 +247,7 @@ const ShoppingCart = new (function() {
       const meta = pricingRule.getPricingMetadata();
       var reqt = meta.requirements;
       var inct = meta.incentives;
-      if (pricingRule.getPricingRuleCode() === PricingRuleCodes.N_FOR_N_DEAL) {
+      if (pricingRule.getPricingRuleCode() === PRICING_RULE_CODES.N_FOR_N_DEAL) {
         var priceToDeduce = 0;
         // subtract quantity of affected pricing rule application
         reqt.forEach(req => {
@@ -261,7 +261,7 @@ const ShoppingCart = new (function() {
           productsToBuy: productsToBuy,
           priceToDeduce: priceToDeduce
         };
-      } else if (pricingRule.getPricingRuleCode() === PricingRuleCodes.BULK_DISCOUNT) {
+      } else if (pricingRule.getPricingRuleCode() === PRICING_RULE_CODES.BULK_DISCOUNT) {
         // will remove all products with already implicated BULK_DISCOUNT pricing rule
         // parse newprice
         const newPrices = {};
@@ -284,7 +284,7 @@ const ShoppingCart = new (function() {
           productsToBuy: productsToBuy,
           priceToDeduce: totalPrice - discountedPrice
         };
-      } else if (pricingRule.getPricingRuleCode() === PricingRuleCodes.FREEBIE) {
+      } else if (pricingRule.getPricingRuleCode() === PRICING_RULE_CODES.FREEBIE) {
         // subtract quantity of affected pricing rule application
         reqt.forEach(req => {
           productsToBuy[req.productCode] -= req.minQuantity;
@@ -326,9 +326,9 @@ const ShoppingCart = new (function() {
       // extract (type) discount and sort decreasing by requirements. Weight should depend on product value.
       // In the case of multiple applicable (type) discount, always choose the deal with many requirements first
       // Subtract Available Products and Iterate through the applicable (type) discounts. Repeat the Process.
-      Object.keys(PricingRuleCodes)
+      Object.keys(PRICING_RULE_CODES)
         .filter(rule => {
-          return rule !== PricingRuleCodes.PROMO_CODE;
+          return rule !== PRICING_RULE_CODES.PROMO_CODE;
         })
         .forEach(pricingRuleCode => {
           var priceToDeduce = 0;

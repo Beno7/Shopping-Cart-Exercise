@@ -40,7 +40,7 @@ function AmaysimPricingRule(shoppingRule = {}) {
    * @param update {pricingRuleCode: string?, pricingMetadata: any}
    */
   this.update = function(update) {
-    if (PricingRuleCodes[(update.pricingRuleCode || '').trim()])
+    if (PRICING_RULE_CODES[(update.pricingRuleCode || '').trim()])
       _pricingRuleCode = update.pricingRuleCode.trim();
     _pricingMetadata = update.pricingMetadata || _pricingMetadata;
   };
@@ -92,5 +92,5 @@ function AmaysimPricingRule(shoppingRule = {}) {
  */
 AmaysimPricingRule.isJsonValid = function(shoppingRule = '') {
   return (shoppingRule._id || '').trim()
-    && PricingRuleCodes[shoppingRule.pricingRuleCode || ''];
+    && PRICING_RULE_CODES[shoppingRule.pricingRuleCode || ''];
 };
